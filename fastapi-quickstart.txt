@@ -1,0 +1,73 @@
+=====================================
+  FASTAPI QUICK START GUIDE (Windows)
+=====================================
+1. SETUP (first time only)
+---------------------------
+mkdir my-fastapi-app
+cd my-fastapi-app
+python -m venv venv
+venv\Scripts\activate
+pip install "fastapi[standard]"
+
+
+2. CREATE main.py
+------------------
+from fastapi import FastAPI
+app = FastAPI()
+@app.get("/")
+def read_root():
+    return {"message": "Hello from FastAPI!"}
+
+
+3. RUN
+-------
+fastapi dev main.py          ← recommended (standard)
+
+OR with uvicorn directly:
+uvicorn main:app --reload    ← development (auto-reload)
+uvicorn main:app             ← production
+
+
+4. OPEN IN BROWSER
+-------------------
+http://127.0.0.1:8000        → JSON response
+http://127.0.0.1:8000/docs   → Swagger UI (interactive)
+http://127.0.0.1:8000/redoc  → ReDoc UI
+
+
+5. NEXT TIME (already set up)
+------------------------------
+cd my-fastapi-app
+venv\Scripts\activate
+fastapi dev main.py          ← or: uvicorn main:app --reload
+
+
+6. STOP SERVER
+---------------
+Ctrl+C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=====================================
+  TIPS
+=====================================
+- Always activate venv before running
+- main.py must be OUTSIDE the venv folder
+- fastapi dev = development (auto-reload)
+- fastapi run = production
+- uvicorn main:app --reload = same as fastapi dev
+- uvicorn main:app = same as fastapi run
+=====================================
