@@ -12,6 +12,11 @@ def hi():
     return {"message": "Hi from FastAPI!"}
 
 
+@app.get("/api")
+def hello():
+    return {"message": "Hi from Api"}
+
+
 @app.get("/django")
 def django():
     return {"message": "Hello from django!"}
