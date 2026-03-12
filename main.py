@@ -1,7 +1,25 @@
 from fastapi import FastAPI
+from pydantic import BaseModel, HttpUrl
 
 app = FastAPI()
 
+# Define class  (Creating a class)
+class Model(BaseModel):
+    name: str
+    instructor: str
+    duration: float
+    website: HttpUrl
+
+# Post method
+@app.post("/post")                 
+def create_post(post: Model):
+    return{"data":post}
+
+
+
+
+
+# Get method
 @app.get("/")
 def hello():
     return {"message": "Hello from FastAPI!"}
