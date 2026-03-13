@@ -1,4 +1,4 @@
-from fastapi import FastAPI,HTTPException,status
+from fastapi import FastAPI,HTTPException,status,responses,Response
 from pydantic import BaseModel, HttpUrl
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -17,7 +17,7 @@ class Model(BaseModel):
 
 #Databse
 while True:
-    try:
+    try:    
          conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='371946852R',cursor_factory=RealDictCursor)
          cursor = conn.cursor()
          print('Database connected sucessfully')
@@ -47,6 +47,22 @@ def details(id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Course with id:{id} not found")
     return {"Course details": course}
+
+
+@app.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_course(id: int):
+    cursor.execute("""DELETE FROM course_details WHERE id=%s RETURNING *""", (str(id),))
+    deleted = cursor.fetchone()
+    conn.commit()
+
+    if deleted is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Course with id:{id} not found")
+    
+    return Response(status_code=status.HTTP_204_NO_CONTENT)  # ✅ correct status
+
+
+
 
 
 
