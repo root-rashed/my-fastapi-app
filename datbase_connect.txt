@@ -7,6 +7,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 
 
+
 // Then connection
 while True:
     try:
@@ -20,3 +21,11 @@ while True:
         time.sleep(2)
 
 
+
+// Full get method
+# Get method
+@app.get("/")
+def hello():
+    cursor.execute("""SELECT * FROM course_details""")
+    data = cursor.fetchall()
+    return {"Data": data}
