@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException,status
 from pydantic import BaseModel, HttpUrl
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -18,7 +18,7 @@ class Model(BaseModel):
 #Databse
 while True:
     try:
-         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='YOUR_PASSWORD',cursor_factory=RealDictCursor)
+         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='371946852R',cursor_factory=RealDictCursor)
          cursor = conn.cursor()
          print('Database connected sucessfully')
          break
@@ -26,6 +26,7 @@ while True:
         print('Database connection failed')
         print('Error',error)
         time.sleep(2)
+
 
 
 # Post method
@@ -37,12 +38,26 @@ def create_post(post: Model):
     return{"Data":new_post}
 
 
+
 # Get method
 @app.get("/")
 def hello():
     cursor.execute("""SELECT * FROM course_details""")
     data = cursor.fetchall()
     return {"Data": data}
+
+
+
+#Get method
+@app.get("/course/{id}")
+def details(id:int):
+    cursor.execute("""SELECT * FROM course_details WHERE id=%s""",(str(id)))
+    Model = cursor.fetchone
+
+    if not course:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Course with id:{id} not found")
+    else: return {"Course details:":Model}
+
 
 
 
