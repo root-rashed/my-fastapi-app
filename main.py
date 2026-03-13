@@ -18,7 +18,7 @@ class Model(BaseModel):
 #Databse
 while True:
     try:
-         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='Your_PASSWORD',cursor_factory=RealDictCursor)
+         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='371946852R',cursor_factory=RealDictCursor)
          cursor = conn.cursor()
          print('Database connected sucessfully')
          break
@@ -44,7 +44,9 @@ def create_post(post: Model):
 # Get method
 @app.get("/")
 def hello():
-    return {"message": "Hello from FastAPI!"}
+    cursor.execute("""SELECT * FROM course_details""")
+    data = cursor.fetchall()
+    return {"Data": data}
 
 
 @app.get("/hi")
