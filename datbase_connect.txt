@@ -1,0 +1,22 @@
+//PostgreSQL install
+pip install psycopg2
+
+
+// Import libraries
+import psycopg2
+from psycopg2.extras import RealDictCursor
+
+
+// Then connection
+while True:
+    try:
+         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='371946852R',cursor_factory=RealDictCursor)
+         cursor = conn.cursor()
+         print('Database connected sucessfully')
+         break
+    except Exception as error:
+        print('Database connection failed')
+        print('Error',error)
+        time.sleep(2)
+
+
