@@ -15,6 +15,8 @@ class Model(BaseModel):
     website: HttpUrl
 
 
+
+
 #Databse
 while True:
     try:
@@ -36,9 +38,6 @@ while True:
 @app.post("/post")                 
 def create_post(post: Model):
     return{"data":post}
-
-
-
 
 
 # Get method
