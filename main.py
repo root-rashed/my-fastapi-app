@@ -18,7 +18,7 @@ class Model(BaseModel):
 #Databse
 while True:
     try:
-         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='371946852R',cursor_factory=RealDictCursor)
+         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='YOUR_PASSWORD',cursor_factory=RealDictCursor)
          cursor = conn.cursor()
          print('Database connected sucessfully')
          break
@@ -34,7 +34,7 @@ def create_post(post: Model):
     cursor.execute("""INSERT INTO course_details(name,instructor,duration,website) VALUES (%s,%s,%s,%s) RETURNING *""",(post.name,post.instructor,post.duration,str(post.website)))
     new_post = cursor.fetchone
     conn.commit()
-    return{"data":new_post}
+    return{"Data":new_post}
 
 
 # Get method
@@ -43,6 +43,8 @@ def hello():
     cursor.execute("""SELECT * FROM course_details""")
     data = cursor.fetchall()
     return {"Data": data}
+
+
 
 
 
