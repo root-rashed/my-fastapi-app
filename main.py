@@ -29,13 +29,6 @@ while True:
 
 
 
-@app.post("/post")
-def create_post(post: Model):
-    cursor.execute("""INSERT INTO course_details(name,instructor,duration,website) VALUES (%s,%s,%s,%s) RETURNING *""",
-                   (post.name, post.instructor, post.duration, str(post.website)))
-    new_post = cursor.fetchone()   # ✅ added ()
-    conn.commit()
-    return {"Data": new_post}
 
 
 @app.get("/course/{id}")
@@ -49,6 +42,16 @@ def details(id: int):
     return {"Course details": course}
 
 
+@app.post("/post")
+def create_post(post: Model):
+    cursor.execute("""INSERT INTO course_details(name,instructor,duration,website) VALUES (%s,%s,%s,%s) RETURNING *""",
+                   (post.name, post.instructor, post.duration, str(post.website)))
+    new_post = cursor.fetchone()   # ✅ added ()
+    conn.commit()
+    return {"Data": new_post}
+
+
+
 @app.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_course(id: int):
     cursor.execute("""DELETE FROM course_details WHERE id=%s RETURNING *""", (str(id),))
@@ -60,6 +63,24 @@ def delete_course(id: int):
                             detail=f"Course with id:{id} not found")
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)  # ✅ correct status
+
+
+
+@app.put("/update/{id}", status_code=status.HTTP_200_OK)
+def update_course(id: int, post: Model):
+    cursor.execute("""UPDATE course_details SET name=%s, instructor=%s, duration=%s, website=%s WHERE id=%s RETURNING *""",
+                   (post.name, post.instructor, post.duration, str(post.website), str(id)))
+    updated = cursor.fetchone()
+    conn.commit()
+
+    if updated is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Course with id:{id} not found")
+    
+    return {"Data": updated}
+
+
+
 
 
 
