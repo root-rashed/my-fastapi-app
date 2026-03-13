@@ -1,5 +1,6 @@
 //PostgreSQL install
 pip install psycopg2
+pip install psycopg2-binary
 
 
 // Import libraries
