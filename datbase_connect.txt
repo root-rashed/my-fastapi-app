@@ -30,3 +30,13 @@ def hello():
     cursor.execute("""SELECT * FROM course_details""")
     data = cursor.fetchall()
     return {"Data": data}
+
+
+// Full post method
+# Post method
+@app.post("/post")                 
+def create_post(post: Model):
+    cursor.execute("""INSERT INTO course_details(name,instructor,duration,website) VALUES (%s,%s,%s,%s) RETURNING *""",(post.name,post.instructor,post.duration,str(post.website)))
+    new_post = cursor.fetchone
+    conn.commit()
+    return{"Data":new_post}
