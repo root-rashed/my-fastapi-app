@@ -28,14 +28,13 @@ while True:
         time.sleep(2)
 
 
-
-
-
-
 # Post method
 @app.post("/post")                 
 def create_post(post: Model):
-    return{"data":post}
+    cursor.execute("""INSERT INTO course_details(name,instructor,duration,website) VALUES (%s,%s,%s,%s) RETURNING *""",(post.name,post.instructor,post.duration,str(post.website)))
+    new_post = cursor.fetchone
+    conn.commit()
+    return{"data":new_post}
 
 
 # Get method
@@ -46,6 +45,8 @@ def hello():
     return {"Data": data}
 
 
+
+
 @app.get("/hi")
 def hi():
     return {"message": "Hi from FastAPI!"}
@@ -54,7 +55,6 @@ def hi():
 @app.get("/api")
 def hello():
     return {"message": "Hi from Api"}
-
 
 @app.get("/django")
 def django():
