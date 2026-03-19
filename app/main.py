@@ -29,8 +29,6 @@ while True:
 
 
 
-
-
 @app.get("/course/{id}")
 def details(id: int):
     cursor.execute("""SELECT * FROM course_details WHERE id=%s""", (str(id),))  # ✅ tuple
