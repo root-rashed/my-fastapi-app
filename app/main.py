@@ -6,7 +6,6 @@ import time
 
 app = FastAPI()
 
-
 # Define class  (Creating a class)
 class Model(BaseModel):
     name: str
