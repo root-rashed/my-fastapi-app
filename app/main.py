@@ -30,8 +30,8 @@ while True:
 
 @app.get("/course/{id}")
 def details(id: int):
-    cursor.execute("""SELECT * FROM course_details WHERE id=%s""", (str(id),))  # ✅ tuple
-    course = cursor.fetchone()   # ✅ renamed + added ()
+    cursor.execute("""SELECT * FROM course_details WHERE id=%s""", (str(id),)) 
+    course = cursor.fetchone() 
 
     if not course:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -43,7 +43,7 @@ def details(id: int):
 def create_post(post: Model):
     cursor.execute("""INSERT INTO course_details(name,instructor,duration,website) VALUES (%s,%s,%s,%s) RETURNING *""",
                    (post.name, post.instructor, post.duration, str(post.website)))
-    new_post = cursor.fetchone()   # ✅ added ()
+    new_post = cursor.fetchone()  
     conn.commit()
     return {"Data": new_post}
 
@@ -59,7 +59,7 @@ def delete_course(id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Course with id:{id} not found")
     
-    return Response(status_code=status.HTTP_204_NO_CONTENT)  # ✅ correct status
+    return Response(status_code=status.HTTP_204_NO_CONTENT) 
 
 
 
