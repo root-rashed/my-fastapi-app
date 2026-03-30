@@ -28,6 +28,10 @@ while True:
 
 
 
+
+
+
+
 @app.get("/course/{id}")
 def details(id: int):
     cursor.execute("""SELECT * FROM course_details WHERE id=%s""", (str(id),)) 
@@ -63,6 +67,9 @@ def delete_course(id: int):
 
 
 
+
+
+
 @app.put("/update/{id}", status_code=status.HTTP_200_OK)
 def update_course(id: int, post: Model):
     cursor.execute("""UPDATE course_details SET name=%s, instructor=%s, duration=%s, website=%s WHERE id=%s RETURNING *""",
@@ -75,8 +82,6 @@ def update_course(id: int, post: Model):
                             detail=f"Course with id:{id} not found")
     
     return {"Data": updated}
-
-
 
 
 
