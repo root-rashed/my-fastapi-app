@@ -70,6 +70,8 @@ def delete_course(id: int):
 
 
 
+
+
 @app.put("/update/{id}", status_code=status.HTTP_200_OK)
 def update_course(id: int, post: Model):
     cursor.execute("""UPDATE course_details SET name=%s, instructor=%s, duration=%s, website=%s WHERE id=%s RETURNING *""",
