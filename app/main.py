@@ -14,6 +14,7 @@ class Model(BaseModel):
     website: HttpUrl
 
 
+
 #Databse
 while True:
     try:    
