@@ -10,6 +10,7 @@ venv\Scripts\activate
 pip install "fastapi[standard]"
 
 
+
 2. CREATE main.py
 ------------------
 from fastapi import FastAPI
