@@ -4,8 +4,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 
-app = FastAPI()
 
+app = FastAPI()
 # Define class  (Creating a class)
 class Model(BaseModel):
     name: str
@@ -18,7 +18,7 @@ class Model(BaseModel):
 #Databse
 while True:
     try:    
-         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='371946852R',cursor_factory=RealDictCursor)
+         conn = psycopg2.connect(host='localhost',database='course',user='postgres',password='12345R',cursor_factory=RealDictCursor)
          cursor = conn.cursor()
          print('Database connected sucessfully')
          break
@@ -65,6 +65,7 @@ def delete_course(id: int):
                             detail=f"Course with id:{id} not found")
     
     return Response(status_code=status.HTTP_204_NO_CONTENT) 
+
 
 
 
