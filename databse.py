@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker
 
 
 
-SQLALCHEMY_DATABASE_URL ='postgresql://postgres:371946852R@localhost/course_details'
+# Create a new table
+SQLALCHEMY_DATABASE_URL ='postgresql://postgres:371946852R@localhost/courses'
 
 
 

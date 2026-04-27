@@ -1,4 +1,4 @@
-from fastapi import FastAPI,HTTPException,status,responses,Response
+from fastapi import FastAPI,HTTPException,status,responses,Response,Depends
 from pydantic import BaseModel, HttpUrl
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -15,6 +15,20 @@ app = FastAPI()
 # Table creation
 models.Base.metadata.create_all(bind=engine)
 
+@app.get("/coursealchemy")
+def course(db:session = Depends(get_db)):
+    return {"status":"sqlalchemy ORM working"}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -24,7 +38,6 @@ class Model(BaseModel):
     instructor: str
     duration: int
     website: HttpUrl
-
 
 
 #Databse
@@ -38,7 +51,6 @@ while True:
         print('Database connection failed')
         print('Error',error)
         time.sleep(2)
-
 
 
 
@@ -82,6 +94,9 @@ def delete_course(id: int):
 
 
 
+
+
+
 # Put
 @app.put("/update/{id}", status_code=status.HTTP_200_OK)
 def update_course(id: int, post: Model):
@@ -95,10 +110,6 @@ def update_course(id: int, post: Model):
                             detail=f"Course with id:{id} not found")
     
     return {"Data": updated}
-
-
-
-
 
 
 
