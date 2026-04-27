@@ -3,18 +3,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-
-# Create a new table
-SQLALCHEMY_DATABASE_URL ='postgresql://postgres:371946852R@localhost/courses'
-
-
+SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:371946852R@localhost/courses'
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
-
-
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()
