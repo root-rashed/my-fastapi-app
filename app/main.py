@@ -55,6 +55,23 @@ def course_alchemy(db: Session = Depends(get_db)):
     return {"status": "sqlalchemy ORM working"}
 
 
+@app.post("/courses")
+def create_course(course:CourseModel, db:Session = Depends(get_db)):
+    new_course = models.Course(
+        name = course.name,
+        instructor = course.instructor,
+        duration = course.duration,
+        website = str(course.website)
+    )
+    db.add(new_course)
+    db.commit()
+    db.refresh(new_course)
+    return {"Course: ",new_course}
+
+
+
+
+
 # ── psycopg2 routes ───────────────────────────────────────────────────────────
 
 @app.get("/")
