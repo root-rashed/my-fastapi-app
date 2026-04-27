@@ -3,9 +3,21 @@ from pydantic import BaseModel, HttpUrl
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from . import models
+from sqlalchemy.orm import session
+from . databse import engine,get_db
+
 
 
 app = FastAPI()
+
+
+# Table creation
+models.Base.metadata.create_all(bind=engine)
+
+
+
+
 # Define class  (Creating a class)
 class Model(BaseModel):
     name: str
