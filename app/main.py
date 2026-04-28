@@ -49,7 +49,6 @@ connect_db()
 
 
 # ── SQLAlchemy route ──────────────────────────────────────────────────────────
-
 @app.get("/coursealchemy")
 def course_alchemy(db: Session = Depends(get_db)):
     return {"status": "sqlalchemy ORM working"}
