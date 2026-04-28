@@ -10,6 +10,7 @@ from .database import engine, get_db
 
 app = FastAPI()
 
+
 # Table creation
 models.Base.metadata.create_all(bind=engine)
 
@@ -20,7 +21,6 @@ class CourseModel(BaseModel):
     instructor: str
     duration: int
     website: HttpUrl
-
 
 # Database connection (raw psycopg2)
 conn = None
@@ -48,13 +48,35 @@ def connect_db():
 connect_db()
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ── SQLAlchemy route ──────────────────────────────────────────────────────────
-@app.get("/coursealchemy")
+@app.get("/course")
 def course_alchemy(db: Session = Depends(get_db)):
    course = db.query(models.Course).all()
    return {"Course": course}
 
-@app.get("/coursealchemy/{id}")
+
+
+@app.get("/course/{id}")
 def course_alchemy(id: int, db: Session = Depends(get_db)):
     course = db.query(models.Course).filter(models.Course.id == id).first()
     
@@ -67,7 +89,8 @@ def course_alchemy(id: int, db: Session = Depends(get_db)):
     return {"Course details": course}
 
 
-@app.post("/courses")
+
+@app.post("/create_course")
 def create_course(course:CourseModel, db:Session = Depends(get_db)):
     new_course = models.Course(
         name = course.name,
@@ -81,7 +104,8 @@ def create_course(course:CourseModel, db:Session = Depends(get_db)):
     return {"Course: ",new_course}
 
 
-@app.put("/coursealchemy/{id}")
+
+@app.put("/update_course/{id}")
 def update_course(id: int, updated_course: CourseModel, db: Session = Depends(get_db)):
     course_query = db.query(models.Course).filter(models.Course.id == id)
     course = course_query.first()
@@ -96,6 +120,41 @@ def update_course(id: int, updated_course: CourseModel, db: Session = Depends(ge
     db.commit()
     db.refresh(course)
     return {"Course_details": course}
+
+
+
+
+@app.delete("/delete_course/{id}",status_code = status.HTTP_204_NO_CONTENT)
+def delete_course(id:int,db:Session=Depends(get_db)):
+    course_query = db.query(models.Course).filter(models.Course.id == id)
+    course = course_query.first()
+    if not course:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id:{id} not found"
+        )
+    course_query.delete(synchronize_session=False)
+    db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ── psycopg2 routes ───────────────────────────────────────────────────────────
