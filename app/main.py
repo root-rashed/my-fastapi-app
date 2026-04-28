@@ -51,7 +51,20 @@ connect_db()
 # ── SQLAlchemy route ──────────────────────────────────────────────────────────
 @app.get("/coursealchemy")
 def course_alchemy(db: Session = Depends(get_db)):
-    return {"status": "sqlalchemy ORM working"}
+   course = db.query(models.Course).all()
+   return {"Course": course}
+
+@app.get("/coursealchemy/{id}")
+def course_alchemy(id: int, db: Session = Depends(get_db)):
+    course = db.query(models.Course).filter(models.Course.id == id).first()
+    
+    if not course:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id:{id} not found"
+        )
+    
+    return {"Course details": course}
 
 
 @app.post("/courses")
@@ -68,7 +81,21 @@ def create_course(course:CourseModel, db:Session = Depends(get_db)):
     return {"Course: ",new_course}
 
 
-
+@app.put("/coursealchemy/{id}")
+def update_course(id: int, updated_course: CourseModel, db: Session = Depends(get_db)):
+    course_query = db.query(models.Course).filter(models.Course.id == id)
+    course = course_query.first()
+    if not course:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id:{id} not found"
+        )
+    update_data = updated_course.model_dump()
+    update_data["website"] = str(update_data["website"])  # Fixed: update_date → update_data
+    course_query.update(update_data, synchronize_session=False)
+    db.commit()
+    db.refresh(course)
+    return {"Course_details": course}
 
 
 # ── psycopg2 routes ───────────────────────────────────────────────────────────
