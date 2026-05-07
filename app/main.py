@@ -6,13 +6,19 @@ import time
 from . import models
 from sqlalchemy.orm import Session  
 from .database import engine, get_db  
+from . import models,schemas
+
 
 
 app = FastAPI()
 
 
+
+
 # Table creation
 models.Base.metadata.create_all(bind=engine)
+
+
 
 
 # Pydantic model
@@ -21,6 +27,7 @@ class CourseModel(BaseModel):
     instructor: str
     duration: int
     website: HttpUrl
+
 
 # Database connection (raw psycopg2)
 conn = None
@@ -69,39 +76,36 @@ connect_db()
 
 
 # ── SQLAlchemy route ──────────────────────────────────────────────────────────
-@app.get("/course")
+@app.get("/course",response_model=list[schemas.CourseResponse])
 def course_alchemy(db: Session = Depends(get_db)):
-   course = db.query(models.Course).all()
-   return {"Course": course}
+   courses = db.query(models.Course).all()
+   return courses
 
 
 
-@app.get("/course/{id}")
+@app.get("/course/{id}",response_model=schemas.CourseResponse)
 def course_alchemy(id: int, db: Session = Depends(get_db)):
-    course = db.query(models.Course).filter(models.Course.id == id).first()
+    courses = db.query(models.Course).filter(models.Course.id == id).first()
     
-    if not course:
+    if not courses:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id:{id} not found"
         )
     
-    return {"Course details": course}
+    return courses
 
 
 
-@app.post("/create_course")
-def create_course(course:CourseModel, db:Session = Depends(get_db)):
-    new_course = models.Course(
-        name = course.name,
-        instructor = course.instructor,
-        duration = course.duration,
-        website = str(course.website)
-    )
+@app.post("/create_course", response_model=schemas.CourseResponse)
+def create_course(course:schemas.CourseCreate, db:Session = Depends(get_db)):
+    new_course = models.Course(**course.model_dump())
     db.add(new_course)
     db.commit()
     db.refresh(new_course)
-    return {"Course: ",new_course}
+    return new_course
+
+
 
 
 
@@ -120,7 +124,6 @@ def update_course(id: int, updated_course: CourseModel, db: Session = Depends(ge
     db.commit()
     db.refresh(course)
     return {"Course_details": course}
-
 
 
 
@@ -159,91 +162,91 @@ def delete_course(id:int,db:Session=Depends(get_db)):
 
 # ── psycopg2 routes ───────────────────────────────────────────────────────────
 
-@app.get("/")
-def get_all_courses(): 
-    cursor.execute("""SELECT * FROM course_details""")
-    data = cursor.fetchall()
-    return {"Data": data}
+# @app.get("/")
+# def get_all_courses(): 
+#     cursor.execute("""SELECT * FROM course_details""")
+#     data = cursor.fetchall()
+#     return {"Data": data}
 
 
-@app.get("/hi")
-def hi():
-    return {"message": "Hi from FastAPI!"}
+# @app.get("/hi")
+# def hi():
+#     return {"message": "Hi from FastAPI!"}
 
 
-@app.get("/api")
-def hello_api(): 
-    return {"message": "Hi from Api"}
+# @app.get("/api")
+# def hello_api(): 
+#     return {"message": "Hi from Api"}
 
 
-@app.get("/django")
-def django():
-    return {"message": "Hello from django!"}
+# @app.get("/django")
+# def django():
+#     return {"message": "Hello from django!"}
 
 
-@app.get("/course")
-def get_course():  
-    return {"message": "My FastApi Course"}
+# @app.get("/course")
+# def get_course():  
+#     return {"message": "My FastApi Course"}
 
 
-@app.get("/motivation/code")
-def motivation():  
-    return {"message": "Consistency is the only motivation"}
+# @app.get("/motivation/code")
+# def motivation():  
+#     return {"message": "Consistency is the only motivation"}
 
 
-@app.get("/course/{id}")
-def get_course_details(id: int):  
-    cursor.execute("""SELECT * FROM course_details WHERE id=%s""", (str(id),))
-    course = cursor.fetchone()
+# @app.get("/course/{id}")
+# def get_course_details(id: int):  
+#     cursor.execute("""SELECT * FROM course_details WHERE id=%s""", (str(id),))
+#     course = cursor.fetchone()
 
-    if not course:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id:{id} not found"
-        )
-    return {"Course details": course}
-
-
-@app.post("/post", status_code=status.HTTP_201_CREATED)
-def create_course(post: CourseModel):  
-    cursor.execute(
-        """INSERT INTO course_details(name, instructor, duration, website)
-           VALUES (%s, %s, %s, %s) RETURNING *""",
-        (post.name, post.instructor, post.duration, str(post.website))
-    )
-    new_post = cursor.fetchone()
-    conn.commit()
-    return {"Data": new_post}
+#     if not course:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"Course with id:{id} not found"
+#         )
+#     return {"Course details": course}
 
 
-@app.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_course(id: int):
-    cursor.execute("""DELETE FROM course_details WHERE id=%s RETURNING *""", (str(id),))
-    deleted = cursor.fetchone()
-    conn.commit()
-
-    if deleted is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id:{id} not found"
-        )
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+# @app.post("/post", status_code=status.HTTP_201_CREATED)
+# def create_course(post: CourseModel):  
+#     cursor.execute(
+#         """INSERT INTO course_details(name, instructor, duration, website)
+#            VALUES (%s, %s, %s, %s) RETURNING *""",
+#         (post.name, post.instructor, post.duration, str(post.website))
+#     )
+#     new_post = cursor.fetchone()
+#     conn.commit()
+#     return {"Data": new_post}
 
 
-@app.put("/update/{id}", status_code=status.HTTP_200_OK)
-def update_course(id: int, post: CourseModel): 
-    cursor.execute(
-        """UPDATE course_details
-           SET name=%s, instructor=%s, duration=%s, website=%s
-           WHERE id=%s RETURNING *""",
-        (post.name, post.instructor, post.duration, str(post.website), str(id))
-    )
-    updated = cursor.fetchone()
-    conn.commit()
+# @app.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
+# def delete_course(id: int):
+#     cursor.execute("""DELETE FROM course_details WHERE id=%s RETURNING *""", (str(id),))
+#     deleted = cursor.fetchone()
+#     conn.commit()
 
-    if updated is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id:{id} not found"
-        )
-    return {"Data": updated}
+#     if deleted is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"Course with id:{id} not found"
+#         )
+#     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+# @app.put("/update/{id}", status_code=status.HTTP_200_OK)
+# def update_course(id: int, post: CourseModel): 
+#     cursor.execute(
+#         """UPDATE course_details
+#            SET name=%s, instructor=%s, duration=%s, website=%s
+#            WHERE id=%s RETURNING *""",
+#         (post.name, post.instructor, post.duration, str(post.website), str(id))
+#     )
+#     updated = cursor.fetchone()
+#     conn.commit()
+
+#     if updated is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail=f"Course with id:{id} not found"
+#         )
+#     return {"Data": updated}
