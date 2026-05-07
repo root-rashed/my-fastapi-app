@@ -97,6 +97,9 @@ def course_alchemy(id: int, db: Session = Depends(get_db)):
 
 
 
+
+
+
 @app.post("/create_course", response_model=schemas.CourseResponse)
 def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
 
@@ -109,6 +112,18 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
     db.refresh(new_course)
 
     return new_course
+
+
+@app.post("/users",status_code=status.HTTP_201_CREATED)
+def user(user:schemas.UserCreate,db:Session=Depends(get_db)):
+    new_user = models.User(**user.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+
 
 
 

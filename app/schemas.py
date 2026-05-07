@@ -1,4 +1,4 @@
-from pydantic import BaseModel, HttpUrl, ConfigDict
+from pydantic import BaseModel, HttpUrl, ConfigDict,EmailStr
 
 class CourseCreate(BaseModel):
     name: str
@@ -9,5 +9,11 @@ class CourseCreate(BaseModel):
 
 class CourseResponse(CourseCreate):
     id: int
-
     model_config = ConfigDict(from_attributes=True)
+
+
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
