@@ -104,7 +104,6 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
     course_data["website"] = str(course_data["website"])
 
     new_course = models.Course(**course_data)
-
     db.add(new_course)
     db.commit()
     db.refresh(new_course)
