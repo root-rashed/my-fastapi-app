@@ -98,11 +98,17 @@ def course_alchemy(id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/create_course", response_model=schemas.CourseResponse)
-def create_course(course:schemas.CourseCreate, db:Session = Depends(get_db)):
-    new_course = models.Course(**course.model_dump())
+def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
+
+    course_data = course.model_dump()
+    course_data["website"] = str(course_data["website"])
+
+    new_course = models.Course(**course_data)
+
     db.add(new_course)
     db.commit()
     db.refresh(new_course)
+
     return new_course
 
 
