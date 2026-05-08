@@ -113,7 +113,7 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
     return new_course
 
 
-@app.post("/users",status_code=status.HTTP_201_CREATED)
+@app.post("/users",status_code=status.HTTP_201_CREATED,response_model=schemas.UserRes)
 def users(user:schemas.UserCreate,db:Session=Depends(get_db)):
     new_user = models.User(**user.model_dump())
     db.add(new_user)
