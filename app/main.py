@@ -6,7 +6,7 @@ import time
 from . import models
 from sqlalchemy.orm import Session  
 from .database import engine, get_db  
-from . import models,schemas
+from . import models,schemas,utils
 
 
 
@@ -115,11 +115,19 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
 
 @app.post("/users",status_code=status.HTTP_201_CREATED,response_model=schemas.UserRes)
 def users(user:schemas.UserCreate,db:Session=Depends(get_db)):
+    if db.query(models.User).filter(models.User.email == user.email).first():
+                    raise HTTPException(400,"Email Already Exist")                                                                                                                        )
+    
+    hashed_password = utils.hash_password(user.password)
+
+    user.password = hashed_password
     new_user = models.User(**user.model_dump())
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
+
+
 
 
 
