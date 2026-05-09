@@ -5,7 +5,9 @@ from .. database import get_db
 from typing import List
 
 
+
 router = APIRouter()
+
 
 
 
@@ -15,6 +17,7 @@ router = APIRouter()
 def course_alchemy(db: Session = Depends(get_db)):
    courses = db.query(models.Course).all()
    return courses
+
 
 @router.get("/course/{id}",response_model=schemas.CourseResponse)
 def course_alchemy(id: int, db: Session = Depends(get_db)):
