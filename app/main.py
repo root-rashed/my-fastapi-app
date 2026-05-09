@@ -1,183 +1,39 @@
-from fastapi import FastAPI, HTTPException, status, Response, Depends
-from pydantic import BaseModel, HttpUrl
-import psycopg2
-from psycopg2.extras import RealDictCursor
-import time
-from . import models
-from sqlalchemy.orm import Session  
-from .database import engine, get_db  
-from . import models,schemas,utils
-
-
+from fastapi import FastAPI
+from . routers import users,course
 
 app = FastAPI()
 
-
-
-
-# Table creation
-models.Base.metadata.create_all(bind=engine)
-
-
-
-
-# Pydantic model
-class CourseModel(BaseModel):
-    name: str
-    instructor: str
-    duration: int
-    website: HttpUrl
-
-
-
-# Database connection (raw psycopg2)
-conn = None
-cursor = None
-
-def connect_db():
-    global conn, cursor
-    while True:
-        try:
-            conn = psycopg2.connect(
-                host='localhost',
-                database='courses',
-                user='postgres',
-                password='371946852R',
-                cursor_factory=RealDictCursor
-            )
-            cursor = conn.cursor()
-            print('Database connected successfully')
-            break
-        except Exception as error:
-            print('Database connection failed')
-            print('Error:', error)
-            time.sleep(2)
-
-connect_db()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ── SQLAlchemy route ──────────────────────────────────────────────────────────
-@app.get("/courses",response_model=list[schemas.CourseResponse])
-def course_alchemy(db: Session = Depends(get_db)):
-   courses = db.query(models.Course).all()
-   return courses
-
-
-@app.get("/course/{id}",response_model=schemas.CourseResponse)
-def course_alchemy(id: int, db: Session = Depends(get_db)):
-    courses = db.query(models.Course).filter(models.Course.id == id).first()
-    
-    if not courses:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id:{id} not found"
-        )
-    
-    return courses
-
-
-
-
-
-
-@app.post("/create_course", response_model=schemas.CourseResponse)
-def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
-
-    course_data = course.model_dump()
-    course_data["website"] = str(course_data["website"])
-
-    new_course = models.Course(**course_data)
-    db.add(new_course)
-    db.commit()
-    db.refresh(new_course)
-
-    return new_course
-
-
-@app.post("/users",status_code=status.HTTP_201_CREATED,response_model=schemas.UserRes)
-def users(user:schemas.UserCreate,db:Session=Depends(get_db)):
-    # if db.query(models.User).filter(models.User.email == user.email).first():
-    #                 raise HTTPException(400,"Email Already Exist")                                                                                                                        )
-    
-    hashed_password = utils.hash_password(user.password)
-
-    user.password = hashed_password
-    new_user = models.User(**user.model_dump())
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
-
-
-
-
-
-
-
-@app.put("/update_course/{id}")
-def update_course(id: int, updated_course: CourseModel, db: Session = Depends(get_db)):
-    course_query = db.query(models.Course).filter(models.Course.id == id)
-    course = course_query.first()
-    if not course:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id:{id} not found"
-        )
-    update_data = updated_course.model_dump()
-    update_data["website"] = str(update_data["website"])  # Fixed: update_date → update_data
-    course_query.update(update_data, synchronize_session=False)
-    db.commit()
-    db.refresh(course)
-    return {"Course_details": course}
-
-
-
-@app.delete("/delete_course/{id}",status_code = status.HTTP_204_NO_CONTENT)
-def delete_course(id:int,db:Session=Depends(get_db)):
-    course_query = db.query(models.Course).filter(models.Course.id == id)
-    course = course_query.first()
-    if not course:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id:{id} not found"
-        )
-    course_query.delete(synchronize_session=False)
-    db.commit()
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.include_router(course.router)
+app.include_router(users.router)
+
+
+
+
+
+# # Database connection (raw psycopg2)
+# conn = None
+# cursor = None
+
+# def connect_db():
+#     global conn, cursor
+#     while True:
+#         try:
+#             conn = psycopg2.connect(
+#                 host='localhost',
+#                 database='courses',
+#                 user='postgres',
+#                 password='371946852R',
+#                 cursor_factory=RealDictCursor
+#             )
+#             cursor = conn.cursor()
+#             print('Database connected successfully')
+#             break
+#         except Exception as error:
+#             print('Database connection failed')
+#             print('Error:', error)
+#             time.sleep(2)
+
+# connect_db()
 
 
 
