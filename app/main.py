@@ -29,6 +29,7 @@ class CourseModel(BaseModel):
     website: HttpUrl
 
 
+
 # Database connection (raw psycopg2)
 conn = None
 cursor = None
@@ -76,7 +77,7 @@ connect_db()
 
 
 # ── SQLAlchemy route ──────────────────────────────────────────────────────────
-@app.get("/course",response_model=list[schemas.CourseResponse])
+@app.get("/courses",response_model=list[schemas.CourseResponse])
 def course_alchemy(db: Session = Depends(get_db)):
    courses = db.query(models.Course).all()
    return courses
@@ -115,8 +116,8 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
 
 @app.post("/users",status_code=status.HTTP_201_CREATED,response_model=schemas.UserRes)
 def users(user:schemas.UserCreate,db:Session=Depends(get_db)):
-    if db.query(models.User).filter(models.User.email == user.email).first():
-                    raise HTTPException(400,"Email Already Exist")                                                                                                                        )
+    # if db.query(models.User).filter(models.User.email == user.email).first():
+    #                 raise HTTPException(400,"Email Already Exist")                                                                                                                        )
     
     hashed_password = utils.hash_password(user.password)
 
@@ -126,9 +127,6 @@ def users(user:schemas.UserCreate,db:Session=Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     return new_user
-
-
-
 
 
 

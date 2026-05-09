@@ -12,6 +12,7 @@ class Course(Base):
     duration = Column(Float, nullable=False)
     website = Column(String, nullable=False)
 
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key =True,nullable=False)
