@@ -11,8 +11,8 @@ router = APIRouter()
 # For Users only
 @router.post("/users",status_code=status.HTTP_201_CREATED,response_model=schemas.UserRes)
 def users(user:schemas.UserCreate,db:Session=Depends(get_db)):
-    if db.query(models.User).filter(models.User.email == user.email).first():
-                    raise HTTPException(400,"Email Already Exist")                                                                                                                        )
+    # if db.query(models.User).filter(models.User.email == user.email).first():
+    #                 raise HTTPException(400,"Email Already Exist")                                                                                                                        )
     
     hashed_password = utils.hash_password(user.password)
 
