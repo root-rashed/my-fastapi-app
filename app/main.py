@@ -10,6 +10,14 @@ app.include_router(users.router)
 
 
 
+
+
+
+
+
+
+
+
 # # Database connection (raw psycopg2)
 # conn = None
 # cursor = None
@@ -20,9 +28,9 @@ app.include_router(users.router)
 #         try:
 #             conn = psycopg2.connect(
 #                 host='localhost',
-#                 database='courses',
-#                 user='postgres',
-#                 password='371946852R',
+#                 database='DB_NAME',
+#                 user='DB_USER',
+#                 password='DB_PASSWORD',
 #                 cursor_factory=RealDictCursor
 #             )
 #             cursor = conn.cursor()
@@ -34,6 +42,9 @@ app.include_router(users.router)
 #             time.sleep(2)
 
 # connect_db()
+
+
+
 
 
 
