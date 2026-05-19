@@ -22,7 +22,7 @@ def course_alchemy(db: Session = Depends(get_db)):
 @router.get("/course/{id}",response_model=schemas.CourseResponse)
 def course_alchemy(id: int, db: Session = Depends(get_db)):
     courses = db.query(models.Course).filter(models.Course.id == id).first()
-    
+
     if not courses:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
