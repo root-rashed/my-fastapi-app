@@ -6,20 +6,22 @@ from typing import List
 
 
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/course"
+)
 
 
 
 
 
 #  ── SQLAlchemy route ──────────────────────────────────────────────────────────
-@router.get("/courses",response_model=list[schemas.CourseResponse])
+@router.get("/",response_model=list[schemas.CourseResponse])
 def course_alchemy(db: Session = Depends(get_db)):
    courses = db.query(models.Course).all()
    return courses
 
 
-@router.get("/course/{id}",response_model=schemas.CourseResponse)
+@router.get("/{id}",response_model=schemas.CourseResponse)
 def course_alchemy(id: int, db: Session = Depends(get_db)):
     courses = db.query(models.Course).filter(models.Course.id == id).first()
 
@@ -60,7 +62,7 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
 
 
 
-@router.put("/update_course/{id}")
+@router.put("/{id}")
 def update_course(id: int, updated_course: CourseModel, db: Session = Depends(get_db)):
     course_query = db.query(models.Course).filter(models.Course.id == id)
     course = course_query.first()
@@ -77,9 +79,7 @@ def update_course(id: int, updated_course: CourseModel, db: Session = Depends(ge
     return {"Course_details": course}
 
 
-
-
-@router.delete("/delete_course/{id}",status_code = status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}",status_code = status.HTTP_204_NO_CONTENT)
 def delete_course(id:int,db:Session=Depends(get_db)):
     course_query = db.query(models.Course).filter(models.Course.id == id)
     course = course_query.first()
