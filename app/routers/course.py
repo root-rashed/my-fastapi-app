@@ -78,6 +78,7 @@ def update_course(id: int, updated_course: CourseModel, db: Session = Depends(ge
 
 
 
+
 @router.delete("/delete_course/{id}",status_code = status.HTTP_204_NO_CONTENT)
 def delete_course(id:int,db:Session=Depends(get_db)):
     course_query = db.query(models.Course).filter(models.Course.id == id)
