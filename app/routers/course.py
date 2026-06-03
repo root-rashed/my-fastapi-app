@@ -38,8 +38,6 @@ def course_alchemy(id: int, db: Session = Depends(get_db)):
 
 
 
-
-
 @router.post("/create_course", response_model=schemas.CourseResponse)
 def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
 
