@@ -10,4 +10,4 @@ def hash_password(password: str):
 
 
 def verify_password(plain,hashed):
-    return password_hash_verify(plain,hashed)
+    return password_hash.verify(plain,hashed)
