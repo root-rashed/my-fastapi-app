@@ -24,3 +24,9 @@ class UserRes(BaseModel):
     email: EmailStr
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
+
+
+class Userlogin(BaseModel):
+    email : EmailStr
+    password : str
