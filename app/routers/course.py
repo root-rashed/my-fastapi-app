@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from .. import models,schemas  
 from .. database import get_db
 from typing import List
-
+from ..  import oauth2
 
 
 router = APIRouter(
@@ -16,7 +16,7 @@ router = APIRouter(
 
 #  ── SQLAlchemy route ──────────────────────────────────────────────────────────
 @router.get("/",response_model=list[schemas.CourseResponse])
-def course_alchemy(db: Session = Depends(get_db)):
+def course_alchemy(db: Session = Depends(get_db),get_current_user: int= Depends(oauth2.get_current_user)):
    courses = db.query(models.Course).all()
    return courses
 
@@ -38,8 +38,11 @@ def course_alchemy(id: int, db: Session = Depends(get_db)):
 
 
 
+
+
+
 @router.post("/create_course", response_model=schemas.CourseResponse)
-def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db)):
+def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db),get_current_user: int= Depends(oauth2.get_current_user)):
 
     course_data = course.model_dump()
     course_data["website"] = str(course_data["website"])
@@ -74,6 +77,9 @@ def update_course(id: int, updated_course: CourseModel, db: Session = Depends(ge
     db.commit()
     db.refresh(course)
     return {"Course_details": course}
+
+
+
 
 
 @router.delete("/{id}",status_code = status.HTTP_204_NO_CONTENT)
