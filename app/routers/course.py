@@ -17,21 +17,25 @@ router = APIRouter(
 #  ── SQLAlchemy route ──────────────────────────────────────────────────────────
 @router.get("/",response_model=list[schemas.CourseResponse])
 def course_alchemy(db: Session = Depends(get_db),current_user: models.User = Depends(oauth2.get_current_user)):
-   courses = db.query(models.Course).all()
-   return courses
+#    courses = db.query(models.Course).all()
+    courses = db.query(models.Course).filter(models.Course.created_id == current_user.id).first().all()
+    return courses
 
 
 @router.get("/{id}",response_model=schemas.CourseResponse)
 def course_alchemy(id: int, db: Session = Depends(get_db)):
-    courses = db.query(models.Course).filter(models.Course.id == id).first()
+    course = db.query(models.Course).filter(models.Course.id == id).first()
 
-    if not courses:
+    if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id:{id} not found"
         )
     
-    return courses
+    if course.created_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not Authorized action")
+    
+    return course
 
 
 
@@ -66,11 +70,16 @@ def create_course(course: schemas.CourseCreate, db: Session = Depends(get_db),cu
 def update_course(id: int, updated_course: CourseModel, db: Session = Depends(get_db),current_user: models.User = Depends(oauth2.get_current_user)):
     course_query = db.query(models.Course).filter(models.Course.id == id)
     course = course_query.first()
+
     if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id:{id} not found"
         )
+    
+    if course.created_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not Authorized action")
+
     update_data = updated_course.model_dump()
     update_data["website"] = str(update_data["website"])  # Fixed: update_date → update_data
     course_query.update(update_data, synchronize_session=False)
@@ -86,11 +95,16 @@ def update_course(id: int, updated_course: CourseModel, db: Session = Depends(ge
 def delete_course(id:int,db:Session=Depends(get_db),current_user: models.User = Depends(oauth2.get_current_user)):
     course_query = db.query(models.Course).filter(models.Course.id == id)
     course = course_query.first()
+
     if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id:{id} not found"
         )
+    
+    if course.created_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Not Authorized action")
+    
     course_query.delete(synchronize_session=False)
     db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
