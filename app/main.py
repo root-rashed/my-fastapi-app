@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from . routers import users,course,auth
+from . config import settings
 
 app = FastAPI()
 
