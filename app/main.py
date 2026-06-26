@@ -9,7 +9,6 @@ app.include_router(users.router)
 app.include_router(auth.router)
 
 
-
 # # Database connection (raw psycopg2)
 # conn = None
 # cursor = None
